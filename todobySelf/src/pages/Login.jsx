@@ -35,7 +35,7 @@ export default function Login() {
 
     if (data.token) {
       localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      window.location.href= "/#/dashboard";
     } else {
       alert(data.message);
     }
