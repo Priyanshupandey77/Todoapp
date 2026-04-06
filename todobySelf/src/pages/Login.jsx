@@ -18,33 +18,26 @@ export default function Login() {
       return;
     }
 
-    try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        alert(data.message || "Login failed");
-        return;
-      }
+    if (!res.ok) {
+      alert("Login failed");
+      return;
+    }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-
-        // ✅ SPA-friendly navigation without page reload
-        navigate("/dashboard");
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong. Please try again.");
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href= "/#/dashboard";
+    } else {
+      alert(data.message);
     }
   }
 
@@ -67,7 +60,7 @@ export default function Login() {
       <button disabled={!email || !password}>Login</button>
 
       <p>
-        Don't have an account? <Link to="/signup">Signup</Link>
+        Don't have an account? <Link to="/signup">Signup</Link>{" "}
       </p>
     </form>
   );

@@ -7,20 +7,19 @@ function Dashboard() {
   const [editText, setEditText] = useState("");
   const [filter, setFilter] = useState("all");
   const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem("token")); // <-- Track token in state
+  const [loading, setLoading] = useState(true); //
 
   // Get backend URL from env
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // Fetch todos whenever token changes
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
     const fetchTodos = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`${API_URL}/api/todos`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -28,7 +27,7 @@ function Dashboard() {
 
         if (res.status === 401) {
           localStorage.removeItem("token");
-          setToken(null); // <-- Update token state on 401
+          window.location.reload();
           return;
         }
 
@@ -41,32 +40,43 @@ function Dashboard() {
       }
     };
 
-    fetchTodos();
-  }, [token]); // <-- Dependency ensures fetch runs after login
+    const timeout = setTimeout(fetchTodos, 50);
+    return () => clearTimeout(timeout);
+  }, []);
 
   function addTodo(text) {
     if (!text.trim()) return;
+    const token = localStorage.getItem("token");
     fetch(`${API_URL}/api/todos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // <-- use token state
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ text }),
     })
       .then((res) => res.json())
-      .then((newTodo) => setTodos((prev) => [...prev, newTodo]));
+      .then((newTodo) => {
+        setTodos((prev) => [...prev, newTodo]);
+      });
   }
 
   function deleteTodo(id) {
+    const token = localStorage.getItem("token");
     fetch(`${API_URL}/api/todos/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(() => setTodos((prev) => prev.filter((todo) => todo._id !== id)));
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() => {
+      setTodos((prev) => prev.filter((todo) => todo._id !== id));
+    });
   }
 
   async function toggleTodo(id) {
+    const token = localStorage.getItem("token");
     const todo = todos.find((t) => t._id === id);
+
     const res = await fetch(`${API_URL}/api/todos/${id}`, {
       method: "PUT",
       headers: {
@@ -77,11 +87,13 @@ function Dashboard() {
     });
 
     const updated = await res.json();
+
     setTodos((prev) => prev.map((t) => (t._id === id ? updated : t)));
   }
 
   async function editTodo() {
     if (!editText.trim()) return;
+    const token = localStorage.getItem("token");
     const res = await fetch(`${API_URL}/api/todos/${editingId}`, {
       method: "PUT",
       headers: {
@@ -92,23 +104,11 @@ function Dashboard() {
     });
 
     const updated = await res.json();
+
     setTodos((prev) => prev.map((t) => (t._id === editingId ? updated : t)));
 
     setEditingId(null);
     setEditText("");
-  }
-
-  async function clearCompleted() {
-    await fetch(`${API_URL}/api/todos/clear-completed`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setTodos((prev) => prev.filter((todo) => !todo.completed));
-  }
-
-  function logout() {
-    localStorage.removeItem("token");
-    setToken(null); // <-- ensures UI reacts immediately
   }
 
   const filteredTodos = todos.filter((todo) => {
@@ -116,6 +116,23 @@ function Dashboard() {
     if (filter === "completed") return todo.completed;
     return true;
   });
+
+  async function clearCompleted() {
+    const token = localStorage.getItem("token");
+    await fetch(`${API_URL}/api/todos/clear-completed`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setTodos((prev) => prev.filter((todo) => !todo.completed));
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
 
   if (loading) return <p>Loading...</p>;
 
@@ -187,7 +204,9 @@ function Dashboard() {
                       >
                         Edit
                       </button>
-                      <button onClick={() => deleteTodo(todo._id)}>Delete</button>
+                      <button onClick={() => deleteTodo(todo._id)}>
+                        Delete
+                      </button>
                     </div>
                   </>
                 )}
