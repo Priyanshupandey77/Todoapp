@@ -7,6 +7,7 @@ function Dashboard() {
   const [editText, setEditText] = useState("");
   const [filter, setFilter] = useState("all");
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true); //
 
   // Get backend URL from env
   const API_URL = import.meta.env.VITE_API_URL;
@@ -14,7 +15,10 @@ function Dashboard() {
   useEffect(() => {
     const fetchTodos = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await fetch(`${API_URL}/api/todos`, {
@@ -31,10 +35,13 @@ function Dashboard() {
         setTodos(data);
       } catch (err) {
         console.log(err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchTodos();
+    const timeout = setTimeout(fetchTodos, 50);
+    return () => clearTimeout(timeout);
   }, []);
 
   function addTodo(text) {
@@ -126,6 +133,8 @@ function Dashboard() {
     localStorage.removeItem("token");
     window.location.reload();
   }
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <>
