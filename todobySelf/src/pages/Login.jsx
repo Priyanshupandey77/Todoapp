@@ -7,6 +7,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Get backend URL from env
+  const API_URL = import.meta.env.VITE_API_URL;
+
   async function handleLogin(e) {
     e.preventDefault();
 
@@ -15,13 +18,16 @@ export default function Login() {
       return;
     }
 
-    const res = await fetch("https://todoapp-5i2c.onrender.com/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      `${API_URL}/api/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       },
-      body: JSON.stringify({ email, password }),
-    });
+    );
 
     const data = await res.json();
 
@@ -39,7 +45,6 @@ export default function Login() {
   }
 
   return (
-    
     <form onSubmit={handleLogin}>
       <h1>Todo App</h1>
       <h2>Login</h2>

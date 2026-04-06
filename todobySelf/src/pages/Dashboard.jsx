@@ -8,13 +8,16 @@ function Dashboard() {
   const [filter, setFilter] = useState("all");
   const [todos, setTodos] = useState([]);
 
+  // Get backend URL from env
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchTodos = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       try {
-        const res = await fetch("https://todoapp-5i2c.onrender.com/api/todos", {
+        const res = await fetch(`${API_URL}/api/todos`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -37,7 +40,7 @@ function Dashboard() {
   function addTodo(text) {
     if (!text.trim()) return;
     const token = localStorage.getItem("token");
-    fetch("https://todoapp-5i2c.onrender.com/api/todos", {
+    fetch(`${API_URL}/api/todos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +56,7 @@ function Dashboard() {
 
   function deleteTodo(id) {
     const token = localStorage.getItem("token");
-    fetch(`https://todoapp-5i2c.onrender.com/api/todos/${id}`, {
+    fetch(`${API_URL}/api/todos/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,7 +70,7 @@ function Dashboard() {
     const token = localStorage.getItem("token");
     const todo = todos.find((t) => t._id === id);
 
-    const res = await fetch(`https://todoapp-5i2c.onrender.com/api/todos/${id}`, {
+    const res = await fetch(`${API_URL}/api/todos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -82,9 +85,9 @@ function Dashboard() {
   }
 
   async function editTodo() {
-    if(!editText.trim()) return;
+    if (!editText.trim()) return;
     const token = localStorage.getItem("token");
-    const res = await fetch(`https://todoapp-5i2c.onrender.com/api/todos/${editingId}`, {
+    const res = await fetch(`${API_URL}/api/todos/${editingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +112,7 @@ function Dashboard() {
 
   async function clearCompleted() {
     const token = localStorage.getItem("token");
-    await fetch("https://todoapp-5i2c.onrender.com/api/todos/clear-completed", {
+    await fetch(`${API_URL}/api/todos/clear-completed`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

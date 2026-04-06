@@ -7,10 +7,13 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Get backend URL from env
+  const API_URL = import.meta.env.VITE_API_URL;
+
   async function handleSignup(e) {
     e.preventDefault();
 
-    const res = await fetch("https://todoapp-5i2c.onrender.com/api/auth/signup", {
+    const res = await fetch(`${API_URL}/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
