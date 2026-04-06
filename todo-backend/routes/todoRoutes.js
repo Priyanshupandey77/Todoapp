@@ -44,7 +44,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedTodo = await Todo.findByIdAndDelete({
+    const deletedTodo = await Todo.findOneAndDelete({
       _id: id,
       user: req.user.id,
     });
