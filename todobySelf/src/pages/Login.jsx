@@ -18,16 +18,13 @@ export default function Login() {
       return;
     }
 
-    const res = await fetch(
-      `${API_URL}/api/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ email, password }),
+    });
 
     const data = await res.json();
 
@@ -38,7 +35,7 @@ export default function Login() {
 
     if (data.token) {
       localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
     } else {
       alert(data.message);
     }
