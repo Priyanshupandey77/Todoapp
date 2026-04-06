@@ -14,7 +14,7 @@ function Dashboard() {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:5000/api/todos", {
+        const res = await fetch("https://todoapp-5i2c.onrender.com/api/todos", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -37,7 +37,7 @@ function Dashboard() {
   function addTodo(text) {
     if (!text.trim()) return;
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/api/todos", {
+    fetch("https://todoapp-5i2c.onrender.com/api/todos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +53,7 @@ function Dashboard() {
 
   function deleteTodo(id) {
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:5000/api/todos/${id}`, {
+    fetch(`https://todoapp-5i2c.onrender.com/api/todos/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ function Dashboard() {
     const token = localStorage.getItem("token");
     const todo = todos.find((t) => t._id === id);
 
-    const res = await fetch(`http://localhost:5000/api/todos/${id}`, {
+    const res = await fetch(`https://todoapp-5i2c.onrender.com/api/todos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +84,7 @@ function Dashboard() {
   async function editTodo() {
     if(!editText.trim()) return;
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:5000/api/todos/${editingId}`, {
+    const res = await fetch(`https://todoapp-5i2c.onrender.com/api/todos/${editingId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +109,7 @@ function Dashboard() {
 
   async function clearCompleted() {
     const token = localStorage.getItem("token");
-    await fetch("http://localhost:5000/api/todos/clear-completed", {
+    await fetch("https://todoapp-5i2c.onrender.com/api/todos/clear-completed", {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
